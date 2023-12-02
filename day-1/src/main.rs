@@ -32,38 +32,36 @@ fn parse_digit(text: &str) -> Option<i32> {
     };
 }
 
-fn reverse(text: &str) -> String {
-    return text.chars().rev().collect::<String>();
-}
-
 fn main() {
     let args = Args::parse();
 
-    let content = std::fs::read_to_string(&args.input_path)
-        .expect("could not read file");
+    let content = std::fs::read_to_string(&args.input_path).expect("could not read file");
 
-    let text_digits_string = "zero|one|two|three|four|five|six|seven|eight|nine";
-    let reverse_digits_string = reverse(text_digits_string);
+    let digits_string = r"\d|zero|one|two|three|four|five|six|seven|eight|nine";
 
-    let first_digit_pattern: Regex = Regex::new(&(r"\d|".to_owned() + text_digits_string))
-        .expect("could not parse first digit pattern");
-    let last_digit_pattern: Regex = Regex::new(&(r"\d|".to_owned() + &reverse_digits_string))
-        .expect("could not parse last digit pattern");
+    let first_digit_pattern: Regex =
+        Regex::new(digits_string).expect("could not parse first digit pattern");
+    let last_digit_pattern: Regex =
+        Regex::new(&(r".*(?<digit>".to_owned() + &digits_string + r")"))
+            .expect("could not parse last digit pattern");
 
     let mut sum = 0;
     for line in content.lines() {
-        let first_digit_str = first_digit_pattern.find(line)
-            .expect("could not get first digit").as_str();
+        let first_digit_str = first_digit_pattern
+            .find(line)
+            .expect("could not get first digit")
+            .as_str();
 
-        let reversed_line = reverse(line);
-        let reversed_last_digit_str = last_digit_pattern.find(&reversed_line)
-            .expect("could not get last digit").as_str();
-        let last_digit_str = reverse(&reversed_last_digit_str);
+        let last_digit_captures = last_digit_pattern
+            .captures(line)
+            .expect("could not get last digit");
+        let last_digit_str = last_digit_captures
+            .name("digit")
+            .expect("could not get last digit")
+            .as_str();
 
-        let first_digit = parse_digit(&first_digit_str)
-            .expect("could not parse first digit");
-        let last_digit = parse_digit(&last_digit_str)
-            .expect("could not parse last digit");
+        let first_digit = parse_digit(&first_digit_str).expect("could not parse first digit");
+        let last_digit = parse_digit(&last_digit_str).expect("could not parse last digit");
 
         sum += first_digit * 10 + last_digit;
     }
