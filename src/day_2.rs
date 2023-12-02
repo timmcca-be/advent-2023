@@ -24,3 +24,36 @@ pub fn step_1(content: &str) {
 
     println!("sum: {}", sum);
 }
+
+pub fn step_2(content: &str) {
+    let pattern: Regex =
+        Regex::new(r"(?<count>\d+) (?<color>red|green|blue)").expect("could not parse pattern");
+
+    let mut sum = 0;
+    for line in content.lines() {
+        let mut red = 0;
+        let mut green = 0;
+        let mut blue = 0;
+
+        for capture in pattern.captures_iter(line) {
+            let count = capture
+                .name("count")
+                .expect("could not get number")
+                .as_str()
+                .parse::<i32>()
+                .expect("could not parse number");
+            let color = capture.name("color").expect("could not get color").as_str();
+
+            match color {
+                "red" => red = std::cmp::max(red, count),
+                "green" => green = std::cmp::max(green, count),
+                "blue" => blue = std::cmp::max(blue, count),
+                _ => panic!("unknown color"),
+            };
+        }
+
+        sum += red * green * blue;
+    }
+
+    println!("sum: {}", sum);
+}
