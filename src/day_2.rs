@@ -1,16 +1,6 @@
-use clap::Parser;
 use regex::Regex;
 
-#[derive(Parser)]
-struct Args {
-    input_path: String,
-}
-
-fn main() {
-    let args = Args::parse();
-
-    let content = std::fs::read_to_string(&args.input_path).expect("could not read file");
-
+pub fn step_1(content: &str) {
     let impossible_pattern: Regex =
         Regex::new(r"13 red|14 (?:red|green)|(?:1[5-9]|[2-9]\d|\d{3}) (?:red|green|blue)")
             .expect("could not parse impossible game pattern");

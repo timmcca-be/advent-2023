@@ -1,10 +1,4 @@
-use clap::Parser;
 use regex::Regex;
-
-#[derive(Parser)]
-struct Args {
-    input_path: String,
-}
 
 fn parse_digit(text: &str) -> Option<i32> {
     return match text {
@@ -32,11 +26,30 @@ fn parse_digit(text: &str) -> Option<i32> {
     };
 }
 
-fn main() {
-    let args = Args::parse();
+pub fn step_1(content: &str) {
+    let digits_pattern: Regex =
+        Regex::new(r"(\d).*?(\d)?\D*$").expect("could not parse digit pattern");
 
-    let content = std::fs::read_to_string(&args.input_path).expect("could not read file");
+    let mut sum = 0;
+    for line in content.lines() {
+        let captures = digits_pattern.captures(line).expect("could not get digits");
+        let first_digit_str = captures.get(1).expect("could not get first digit").as_str();
+        let first_digit = parse_digit(&first_digit_str).expect("could not parse first digit");
 
+        let last_digit = match captures.get(2) {
+            Some(last_digit) => {
+                parse_digit(&last_digit.as_str()).expect("could not parse last digit")
+            }
+            None => first_digit,
+        };
+
+        sum += first_digit * 10 + last_digit;
+    }
+
+    println!("sum: {}", sum);
+}
+
+pub fn step_2(content: &str) {
     let digits_string = r"\d|zero|one|two|three|four|five|six|seven|eight|nine";
 
     let first_digit_pattern: Regex =
