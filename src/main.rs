@@ -21,6 +21,7 @@ fn main() {
         "day-2-step-1" => day_2::step_1(&content),
         "day-2-step-2" => day_2::step_2(&content),
         "day-3-step-1" => day_3::step_1(&content),
+        "day-3-step-2" => day_3::step_2(&content),
         _ => panic!("unknown command"),
     };
 }
