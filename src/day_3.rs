@@ -12,26 +12,26 @@ fn get_symbol_indices(line: &str) -> HashSet<usize> {
     return SYMBOL_PATTERN.find_iter(line).map(|m| m.start()).collect();
 }
 
-pub fn step_1(content: &str) {
-    let mut lines = content.lines();
+pub fn step_1(lines: impl IntoIterator<Item = String>) {
+    let mut lines_iterator = lines.into_iter();
 
-    let mut current_line_option = lines.next();
-    let mut next_line_option = lines.next();
+    let mut current_line_option = lines_iterator.next();
+    let mut next_line_option = lines_iterator.next();
 
     let mut previous_symbol_indices: HashSet<usize> = HashSet::new();
-    let mut current_symbol_indices: HashSet<usize> = match current_line_option {
-        Some(line) => get_symbol_indices(line),
+    let mut current_symbol_indices: HashSet<usize> = match &current_line_option {
+        Some(line) => get_symbol_indices(&line),
         None => HashSet::new(),
     };
-    let mut next_symbol_indices: HashSet<usize> = match next_line_option {
-        Some(line) => get_symbol_indices(line),
+    let mut next_symbol_indices: HashSet<usize> = match &next_line_option {
+        Some(line) => get_symbol_indices(&line),
         None => HashSet::new(),
     };
 
     let mut sum = 0;
 
     while let Some(current_line) = current_line_option {
-        for m in NUMBER_PATTERN.find_iter(current_line) {
+        for m in NUMBER_PATTERN.find_iter(&current_line) {
             let range_start = if m.start() == 0 { 0 } else { m.start() - 1 };
             for i in range_start..(m.end() + 1) {
                 if previous_symbol_indices.contains(&i)
@@ -45,12 +45,12 @@ pub fn step_1(content: &str) {
         }
 
         current_line_option = next_line_option;
-        next_line_option = lines.next();
+        next_line_option = lines_iterator.next();
 
         previous_symbol_indices = current_symbol_indices;
         current_symbol_indices = next_symbol_indices;
-        next_symbol_indices = match next_line_option {
-            Some(line) => get_symbol_indices(line),
+        next_symbol_indices = match &next_line_option {
+            Some(line) => get_symbol_indices(&line),
             None => HashSet::new(),
         }
     }
@@ -75,26 +75,26 @@ fn get_gears(line: &str) -> Vec<Gear> {
         .collect();
 }
 
-pub fn step_2(content: &str) {
-    let mut lines = content.lines();
+pub fn step_2(lines: impl IntoIterator<Item = String>) {
+    let mut lines_iterator = lines.into_iter();
 
-    let mut current_line_option = lines.next();
-    let mut next_line_option = lines.next();
+    let mut current_line_option = lines_iterator.next();
+    let mut next_line_option = lines_iterator.next();
 
     let mut previous_gears: Vec<Gear> = Vec::new();
-    let mut current_gears: Vec<Gear> = match current_line_option {
-        Some(line) => get_gears(line),
+    let mut current_gears: Vec<Gear> = match &current_line_option {
+        Some(line) => get_gears(&line),
         None => Vec::new(),
     };
-    let mut next_gears: Vec<Gear> = match next_line_option {
-        Some(line) => get_gears(line),
+    let mut next_gears: Vec<Gear> = match &next_line_option {
+        Some(line) => get_gears(&line),
         None => Vec::new(),
     };
 
     let mut sum = 0;
 
     while let Some(current_line) = current_line_option {
-        for m in NUMBER_PATTERN.find_iter(current_line) {
+        for m in NUMBER_PATTERN.find_iter(&current_line) {
             let range_start = if m.start() == 0 { 0 } else { m.start() - 1 };
             for gear in previous_gears
                 .iter_mut()
@@ -116,12 +116,12 @@ pub fn step_2(content: &str) {
         }
 
         current_line_option = next_line_option;
-        next_line_option = lines.next();
+        next_line_option = lines_iterator.next();
 
         previous_gears = current_gears;
         current_gears = next_gears;
-        next_gears = match next_line_option {
-            Some(line) => get_gears(line),
+        next_gears = match &next_line_option {
+            Some(line) => get_gears(&line),
             None => Vec::new(),
         };
     }

@@ -6,11 +6,11 @@ lazy_static! {
     static ref TOKEN_PATTERN: Regex = Regex::new(r"\d+|\|").unwrap();
 }
 
-pub fn step_1(content: &str) {
+pub fn step_1(lines: impl IntoIterator<Item = String>) {
     let mut sum = 0;
 
-    for line in content.lines() {
-        let mut token_iterator = TOKEN_PATTERN.find_iter(line);
+    for line in lines {
+        let mut token_iterator = TOKEN_PATTERN.find_iter(&line);
         // skip the card number
         token_iterator.next();
 
@@ -38,12 +38,12 @@ pub fn step_1(content: &str) {
     println!("sum: {}", sum);
 }
 
-pub fn step_2(content: &str) {
+pub fn step_2(lines: impl IntoIterator<Item = String>) {
     let mut num_cards = 0;
     let mut extra_copies_counts: LinkedList<i32> = LinkedList::new();
 
-    for line in content.lines() {
-        let mut token_iterator = TOKEN_PATTERN.find_iter(line);
+    for line in lines {
+        let mut token_iterator = TOKEN_PATTERN.find_iter(&line);
         // skip the card number
         token_iterator.next();
 

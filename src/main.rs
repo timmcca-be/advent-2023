@@ -1,4 +1,6 @@
 use clap::Parser;
+use std::fs::File;
+use std::io::{self, BufRead};
 
 mod day_1;
 mod day_2;
@@ -14,17 +16,18 @@ struct Args {
 fn main() {
     let args = Args::parse();
 
-    let content = std::fs::read_to_string(&args.input_path).expect("could not read file");
+    let file = File::open(args.input_path).unwrap();
+    let lines = io::BufReader::new(file).lines().map(|line| line.unwrap());
 
     match args.command.as_str() {
-        "day-1-step-1" => day_1::step_1(&content),
-        "day-1-step-2" => day_1::step_2(&content),
-        "day-2-step-1" => day_2::step_1(&content),
-        "day-2-step-2" => day_2::step_2(&content),
-        "day-3-step-1" => day_3::step_1(&content),
-        "day-3-step-2" => day_3::step_2(&content),
-        "day-4-step-1" => day_4::step_1(&content),
-        "day-4-step-2" => day_4::step_2(&content),
+        "day-1-step-1" => day_1::step_1(lines),
+        "day-1-step-2" => day_1::step_2(lines),
+        "day-2-step-1" => day_2::step_1(lines),
+        "day-2-step-2" => day_2::step_2(lines),
+        "day-3-step-1" => day_3::step_1(lines),
+        "day-3-step-2" => day_3::step_2(lines),
+        "day-4-step-1" => day_4::step_1(lines),
+        "day-4-step-2" => day_4::step_2(lines),
         _ => panic!("unknown command"),
     };
 }

@@ -26,13 +26,15 @@ fn parse_digit(text: &str) -> Option<i32> {
     };
 }
 
-pub fn step_1(content: &str) {
+pub fn step_1(lines: impl IntoIterator<Item = String>) {
     let digits_pattern: Regex =
         Regex::new(r"(\d).*?(\d)?\D*$").expect("could not parse digit pattern");
 
     let mut sum = 0;
-    for line in content.lines() {
-        let captures = digits_pattern.captures(line).expect("could not get digits");
+    for line in lines {
+        let captures = digits_pattern
+            .captures(&line)
+            .expect("could not get digits");
         let first_digit_str = captures.get(1).expect("could not get first digit").as_str();
         let first_digit = parse_digit(&first_digit_str).expect("could not parse first digit");
 
@@ -49,7 +51,7 @@ pub fn step_1(content: &str) {
     println!("sum: {}", sum);
 }
 
-pub fn step_2(content: &str) {
+pub fn step_2(lines: impl IntoIterator<Item = String>) {
     let digits_string = r"\d|zero|one|two|three|four|five|six|seven|eight|nine";
 
     let first_digit_pattern: Regex =
@@ -59,14 +61,14 @@ pub fn step_2(content: &str) {
             .expect("could not parse last digit pattern");
 
     let mut sum = 0;
-    for line in content.lines() {
+    for line in lines {
         let first_digit_str = first_digit_pattern
-            .find(line)
+            .find(&line)
             .expect("could not get first digit")
             .as_str();
 
         let last_digit_captures = last_digit_pattern
-            .captures(line)
+            .captures(&line)
             .expect("could not get last digit");
         let last_digit_str = last_digit_captures
             .name("digit")
