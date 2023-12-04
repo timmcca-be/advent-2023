@@ -60,7 +60,8 @@ pub fn step_1(content: &str) {
 
 struct Gear {
     index: usize,
-    adjacent_numbers: Vec<i32>,
+    product: i32,
+    count: i32,
 }
 
 fn get_gears(line: &str) -> Vec<Gear> {
@@ -68,7 +69,8 @@ fn get_gears(line: &str) -> Vec<Gear> {
         .find_iter(line)
         .map(|m| Gear {
             index: m.start(),
-            adjacent_numbers: Vec::new(),
+            product: 1,
+            count: 0,
         })
         .collect();
 }
@@ -100,17 +102,16 @@ pub fn step_2(content: &str) {
                 .chain(next_gears.iter_mut())
             {
                 if gear.index >= range_start && gear.index <= m.end() {
-                    gear.adjacent_numbers
-                        .push(m.as_str().parse::<i32>().unwrap());
+                    gear.product *= m.as_str().parse::<i32>().unwrap();
+                    gear.count += 1;
                     break;
                 }
             }
         }
 
         for gear in previous_gears {
-            if gear.adjacent_numbers.len() == 2 {
-                sum +=
-                    gear.adjacent_numbers.get(0).unwrap() * gear.adjacent_numbers.get(1).unwrap();
+            if gear.count == 2 {
+                sum += gear.product;
             }
         }
 
