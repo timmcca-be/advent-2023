@@ -6,26 +6,26 @@ lazy_static! {
     static ref NUMBER_PATTERN: Regex = Regex::new(r"\d+").unwrap();
 }
 
-struct Range {
+struct RangeMapping {
     destination_start: i64,
     source_start: i64,
     range_length: i64,
 }
 
-struct RangesIterator<'a> {
+struct RangeMappingsIterator<'a> {
     lines: Box<dyn Iterator<Item = String> + 'a>,
 }
 
-impl<'a> Iterator for RangesIterator<'a> {
-    type Item = Vec<Range>;
+impl<'a> Iterator for RangeMappingsIterator<'a> {
+    type Item = Vec<RangeMapping>;
 
-    fn next(&mut self) -> Option<Vec<Range>> {
+    fn next(&mut self) -> Option<Vec<RangeMapping>> {
         // skip section header
         if self.lines.next() == None {
             return None;
         }
 
-        let mut ranges: Vec<Range> = Vec::new();
+        let mut range_mappings: Vec<RangeMapping> = Vec::new();
         while let Some(line) = self.lines.next() {
             if line == "" {
                 break;
@@ -39,14 +39,14 @@ impl<'a> Iterator for RangesIterator<'a> {
                 panic!("invalid line");
             }
 
-            ranges.push(Range {
+            range_mappings.push(RangeMapping {
                 destination_start: numbers[0],
                 source_start: numbers[1],
                 range_length: numbers[2],
             })
         }
 
-        return Some(ranges);
+        return Some(range_mappings);
     }
 }
 
@@ -61,15 +61,16 @@ pub fn step_1<'a>(lines: impl IntoIterator<Item = String>) {
     // skip empty line
     lines_iterator.next();
 
-    let ranges_iterator = RangesIterator {
+    let range_mappings_iterator = RangeMappingsIterator {
         lines: Box::new(lines_iterator),
     };
-    for ranges in ranges_iterator {
+    for range_mappings in range_mappings_iterator {
         for value in values.iter_mut() {
-            for range in &ranges {
-                if *value >= range.source_start && *value < range.source_start + range.range_length
+            for range_mapping in &range_mappings {
+                if *value >= range_mapping.source_start
+                    && *value < range_mapping.source_start + range_mapping.range_length
                 {
-                    *value = *value - range.source_start + range.destination_start;
+                    *value = *value - range_mapping.source_start + range_mapping.destination_start;
                     break;
                 }
             }
