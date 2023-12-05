@@ -1,4 +1,9 @@
+use lazy_static::lazy_static;
 use regex::Regex;
+
+lazy_static! {
+    static ref DIGITS_PATTERN: Regex = Regex::new(r"(\d).*?(\d)?\D*$").unwrap();
+}
 
 fn parse_digit(text: &str) -> Option<i32> {
     return match text {
@@ -27,12 +32,9 @@ fn parse_digit(text: &str) -> Option<i32> {
 }
 
 pub fn step_1(lines: impl IntoIterator<Item = String>) {
-    let digits_pattern: Regex =
-        Regex::new(r"(\d).*?(\d)?\D*$").expect("could not parse digit pattern");
-
     let mut sum = 0;
     for line in lines {
-        let captures = digits_pattern
+        let captures = DIGITS_PATTERN
             .captures(&line)
             .expect("could not get digits");
         let first_digit_str = captures.get(1).expect("could not get first digit").as_str();
@@ -51,26 +53,25 @@ pub fn step_1(lines: impl IntoIterator<Item = String>) {
     println!("sum: {}", sum);
 }
 
+const DIGIT_PATTERN_STRING: &str = r"\d|zero|one|two|three|four|five|six|seven|eight|nine";
+
+lazy_static! {
+    static ref FIRST_DIGIT_PATTERN: Regex = Regex::new(DIGIT_PATTERN_STRING).unwrap();
+    static ref LAST_DIGIT_PATTERN: Regex =
+        Regex::new(&(r".*(?<digit>".to_owned() + &DIGIT_PATTERN_STRING + r")")).unwrap();
+}
+
 pub fn step_2(lines: impl IntoIterator<Item = String>) {
-    let digits_string = r"\d|zero|one|two|three|four|five|six|seven|eight|nine";
-
-    let first_digit_pattern: Regex =
-        Regex::new(digits_string).expect("could not parse first digit pattern");
-    let last_digit_pattern: Regex =
-        Regex::new(&(r".*(?<digit>".to_owned() + &digits_string + r")"))
-            .expect("could not parse last digit pattern");
-
     let mut sum = 0;
     for line in lines {
-        let first_digit_str = first_digit_pattern
+        let first_digit_str = FIRST_DIGIT_PATTERN
             .find(&line)
             .expect("could not get first digit")
             .as_str();
 
-        let last_digit_captures = last_digit_pattern
+        let last_digit_str = LAST_DIGIT_PATTERN
             .captures(&line)
-            .expect("could not get last digit");
-        let last_digit_str = last_digit_captures
+            .expect("could not get last digit")
             .name("digit")
             .expect("could not get last digit")
             .as_str();
