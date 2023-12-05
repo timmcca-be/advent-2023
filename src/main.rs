@@ -6,6 +6,7 @@ mod day_1;
 mod day_2;
 mod day_3;
 mod day_4;
+mod day_5;
 
 #[derive(Parser)]
 struct Args {
@@ -28,6 +29,8 @@ fn main() {
         "day-3-step-2" => day_3::step_2(lines),
         "day-4-step-1" => day_4::step_1(lines),
         "day-4-step-2" => day_4::step_2(lines),
+        "day-5-step-1" => day_5::step_1(lines),
+        "day-5-step-2" => day_5::step_2(lines),
         _ => panic!("unknown command"),
     };
 }
