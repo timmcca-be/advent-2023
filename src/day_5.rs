@@ -12,11 +12,11 @@ struct RangeMapping {
     range_length: i64,
 }
 
-struct RangeMappingsIterator<'a> {
+struct RangeMappingBatchesIterator<'a> {
     lines: Box<dyn Iterator<Item = String> + 'a>,
 }
 
-impl<'a> Iterator for RangeMappingsIterator<'a> {
+impl<'a> Iterator for RangeMappingBatchesIterator<'a> {
     type Item = Vec<RangeMapping>;
 
     fn next(&mut self) -> Option<Vec<RangeMapping>> {
@@ -61,12 +61,12 @@ pub fn step_1<'a>(lines: impl IntoIterator<Item = String>) {
     // skip empty line
     lines_iterator.next();
 
-    let range_mappings_iterator = RangeMappingsIterator {
+    let range_mapping_batches_iterator = RangeMappingBatchesIterator {
         lines: Box::new(lines_iterator),
     };
-    for range_mappings in range_mappings_iterator {
+    for range_mapping_batch in range_mapping_batches_iterator {
         for value in values.iter_mut() {
-            for range_mapping in &range_mappings {
+            for range_mapping in &range_mapping_batch {
                 if *value >= range_mapping.source_start
                     && *value < range_mapping.source_start + range_mapping.range_length
                 {
@@ -147,15 +147,15 @@ pub fn step_2(lines: impl IntoIterator<Item = String>) {
     // skip empty line
     lines_iterator.next();
 
-    let range_mappings_iterator = RangeMappingsIterator {
+    let range_mapping_batches_iterator = RangeMappingBatchesIterator {
         lines: Box::new(lines_iterator),
     };
-    for range_mappings in range_mappings_iterator {
+    for range_mapping_batch in range_mapping_batches_iterator {
         let mut updated_ranges: Vec<Range> = Vec::new();
         for range in &ranges {
             let mut non_updated_ranges: Vec<Range> = Vec::new();
             non_updated_ranges.push(*range);
-            for range_mapping in &range_mappings {
+            for range_mapping in &range_mapping_batch {
                 let mapping_source_range = Range {
                     start: range_mapping.source_start,
                     length: range_mapping.range_length,
