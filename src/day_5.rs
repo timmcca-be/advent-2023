@@ -12,6 +12,42 @@ struct RangeMapping {
     range_length: i64,
 }
 
+impl RangeMapping {
+    /// Returns a tuple of:
+    /// - A vector of ranges that were updated by this mapping
+    /// - A vector of ranges that were not updated by this mapping
+    fn apply_to_ranges(&self, ranges: &Vec<Range>) -> (Vec<Range>, Vec<Range>) {
+        let mut updated_ranges: Vec<Range> = Vec::new();
+        let mut non_updated_ranges: Vec<Range> = Vec::new();
+
+        let mapping_source_range = Range {
+            start: self.source_start,
+            length: self.range_length,
+        };
+
+        for range in ranges {
+            let (bottom, center, top) = range.split(mapping_source_range);
+            match bottom {
+                Some(range) => non_updated_ranges.push(range),
+                None => {}
+            }
+            match top {
+                Some(range) => non_updated_ranges.push(range),
+                None => {}
+            }
+            match center {
+                Some(range) => updated_ranges.push(Range {
+                    start: range.start - self.source_start + self.destination_start,
+                    length: range.length,
+                }),
+                None => {}
+            }
+        }
+
+        return (updated_ranges, non_updated_ranges);
+    }
+}
+
 struct RangeMappingBatchesIterator<'a> {
     lines: Box<dyn Iterator<Item = String> + 'a>,
 }
@@ -150,46 +186,21 @@ pub fn step_2(lines: impl IntoIterator<Item = String>) {
             let mut non_updated_ranges: Vec<Range> = Vec::new();
             non_updated_ranges.push(*range);
             for range_mapping in &range_mapping_batch {
-                let mapping_source_range = Range {
-                    start: range_mapping.source_start,
-                    length: range_mapping.range_length,
-                };
-                let mut new_non_updated_ranges: Vec<Range> = Vec::new();
-                for non_updated_range in &non_updated_ranges {
-                    let (bottom, center, top) = non_updated_range.split(mapping_source_range);
-                    // bottom and top did not match the range mapping, so we put them into
-                    // new_non_updated_ranges so that we can check them against the other
-                    // mappings in this batch.
-                    match bottom {
-                        Some(range) => new_non_updated_ranges.push(range),
-                        None => {}
-                    }
-                    match top {
-                        Some(range) => new_non_updated_ranges.push(range),
-                        None => {}
-                    }
-                    // center matched the range mapping, so we adjust it and then put it
-                    // into updated_ranges, so it does not get checked against the other
-                    // mappings in this batch.
-                    match center {
-                        Some(range) => updated_ranges.push(Range {
-                            start: range.start - range_mapping.source_start
-                                + range_mapping.destination_start,
-                            length: range.length,
-                        }),
-                        None => {}
-                    }
-                }
-                non_updated_ranges = new_non_updated_ranges;
+                let (newly_updated_ranges, still_non_updated_ranges) =
+                    range_mapping.apply_to_ranges(&non_updated_ranges);
+                updated_ranges = updated_ranges
+                    .into_iter()
+                    .chain(newly_updated_ranges)
+                    .collect();
+                non_updated_ranges = still_non_updated_ranges;
             }
 
             // anything still left in non_updated_ranges has been checked against every
             // mapping in this batch, so we know that its updated value is the same as its
             // previous value. thus we can just append non_updated_ranges to updated_ranges.
             updated_ranges = updated_ranges
-                .iter()
-                .chain(non_updated_ranges.iter())
-                .map(|range| *range)
+                .into_iter()
+                .chain(non_updated_ranges)
                 .collect();
         }
 
