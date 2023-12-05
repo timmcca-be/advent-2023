@@ -87,44 +87,38 @@ struct Range {
 }
 
 impl Range {
+    fn split_on_number(&self, split_point: i64) -> (Option<Range>, Option<Range>) {
+        if split_point <= self.start {
+            return (None, Some(*self));
+        }
+        if split_point >= self.start + self.length {
+            return (Some(*self), None);
+        }
+
+        return (
+            Some(Range {
+                start: self.start,
+                length: split_point - self.start,
+            }),
+            Some(Range {
+                start: split_point,
+                length: self.start + self.length - split_point,
+            }),
+        );
+    }
+
     /// Returns a tuple containing:
     /// - The subrange of self that is below other
     /// - The subrange of self that intersects other
     /// - The subrange of self that is above other
     fn split(&self, other: Range) -> (Option<Range>, Option<Range>, Option<Range>) {
-        let bottom_length = num::clamp(other.start - self.start, 0, self.length);
-        let top_length = num::clamp(
-            self.start + self.length - (other.start + other.length),
-            0,
-            self.length,
-        );
-        let center_length = self.length - bottom_length - top_length;
-        return (
-            if bottom_length > 0 {
-                Some(Range {
-                    start: self.start,
-                    length: bottom_length,
-                })
-            } else {
-                None
-            },
-            if center_length > 0 {
-                Some(Range {
-                    start: std::cmp::max(self.start, other.start),
-                    length: center_length,
-                })
-            } else {
-                None
-            },
-            if top_length > 0 {
-                Some(Range {
-                    start: std::cmp::max(other.start + other.length, self.start),
-                    length: top_length,
-                })
-            } else {
-                None
-            },
-        );
+        let (bottom, non_bottom) = self.split_on_number(other.start);
+        let (center, top) = match non_bottom {
+            Some(range) => range.split_on_number(other.start + other.length),
+            None => (None, None),
+        };
+
+        return (bottom, center, top);
     }
 }
 
