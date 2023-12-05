@@ -159,19 +159,21 @@ pub fn step_2(lines: impl IntoIterator<Item = String>) {
                 let mut new_non_updated_ranges: Vec<Range> = Vec::new();
                 for non_updated_range in &non_updated_ranges {
                     let (bottom, center, top) = non_updated_range.split(mapping_source_range);
-                    if bottom != None {
-                        new_non_updated_ranges.push(bottom.unwrap());
+                    match bottom {
+                        Some(range) => new_non_updated_ranges.push(range),
+                        None => {}
                     }
-                    if top != None {
-                        new_non_updated_ranges.push(top.unwrap());
+                    match top {
+                        Some(range) => new_non_updated_ranges.push(range),
+                        None => {}
                     }
-                    if center != None {
-                        let center_range = center.unwrap();
-                        updated_ranges.push(Range {
-                            start: center_range.start - range_mapping.source_start
+                    match center {
+                        Some(range) => updated_ranges.push(Range {
+                            start: range.start - range_mapping.source_start
                                 + range_mapping.destination_start,
-                            length: center_range.length,
-                        })
+                            length: range.length,
+                        }),
+                        None => {}
                     }
                 }
                 non_updated_ranges = new_non_updated_ranges;
