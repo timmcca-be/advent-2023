@@ -87,6 +87,10 @@ struct Range {
 }
 
 impl Range {
+    /// Returns a tuple containing:
+    /// - The subrange of self that is below other
+    /// - The subrange of self that intersects other
+    /// - The subrange of self that is above other
     fn split(&self, other: Range) -> (Option<Range>, Option<Range>, Option<Range>) {
         let bottom_length = num::clamp(other.start - self.start, 0, self.length);
         let top_length = num::clamp(
@@ -159,6 +163,9 @@ pub fn step_2(lines: impl IntoIterator<Item = String>) {
                 let mut new_non_updated_ranges: Vec<Range> = Vec::new();
                 for non_updated_range in &non_updated_ranges {
                     let (bottom, center, top) = non_updated_range.split(mapping_source_range);
+                    // bottom and top did not match the range mapping, so we put them into
+                    // new_non_updated_ranges so that we can check them against the other
+                    // mappings in this batch.
                     match bottom {
                         Some(range) => new_non_updated_ranges.push(range),
                         None => {}
@@ -167,6 +174,9 @@ pub fn step_2(lines: impl IntoIterator<Item = String>) {
                         Some(range) => new_non_updated_ranges.push(range),
                         None => {}
                     }
+                    // center matched the range mapping, so we adjust it and then put it
+                    // into updated_ranges, so it does not get checked against the other
+                    // mappings in this batch.
                     match center {
                         Some(range) => updated_ranges.push(Range {
                             start: range.start - range_mapping.source_start
@@ -179,6 +189,9 @@ pub fn step_2(lines: impl IntoIterator<Item = String>) {
                 non_updated_ranges = new_non_updated_ranges;
             }
 
+            // anything still left in non_updated_ranges has been checked against every
+            // mapping in this batch, so we know that its updated value is the same as its
+            // previous value. thus we can just append non_updated_ranges to updated_ranges.
             updated_ranges = updated_ranges
                 .iter()
                 .chain(non_updated_ranges.iter())
