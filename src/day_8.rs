@@ -1,6 +1,8 @@
 use lazy_static::lazy_static;
 use regex::Regex;
 use std::collections::HashMap;
+use std::io;
+use std::io::Write;
 
 lazy_static! {
     static ref NODE_PATTERN: Regex =
@@ -64,9 +66,13 @@ pub fn step_2(lines: impl Iterator<Item = String>) {
         node_map.insert(node, (left, right));
     }
 
-    let mut counter = 0;
+    let mut counter: u64 = 0;
     while !current_nodes.iter().all(|node| node.ends_with("Z")) {
-        let instruction = instructions[counter % instructions.len()];
+        if counter % 1000000 == 0 {
+            print!("\rcounter crossed {}", counter);
+            io::stdout().flush().unwrap();
+        }
+        let instruction = instructions[(counter % instructions.len() as u64) as usize];
 
         for node in current_nodes.iter_mut() {
             let mapping = &node_map[node];
@@ -81,5 +87,6 @@ pub fn step_2(lines: impl Iterator<Item = String>) {
         counter += 1;
     }
 
+    println!();
     println!("steps: {}", counter);
 }
