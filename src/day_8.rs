@@ -1,8 +1,6 @@
 use lazy_static::lazy_static;
 use regex::Regex;
 use std::collections::HashMap;
-use std::io;
-use std::io::Write;
 
 lazy_static! {
     static ref NODE_PATTERN: Regex =
@@ -51,7 +49,7 @@ pub fn step_2(lines: impl Iterator<Item = String>) {
     // skip empty line
     lines_iterator.next();
 
-    let mut current_nodes: Vec<String> = Vec::new();
+    let mut starting_nodes: Vec<String> = Vec::new();
     let mut node_map: HashMap<String, (String, String)> = HashMap::new();
     while let Some(line) = lines_iterator.next() {
         let captures = NODE_PATTERN.captures(&line).unwrap();
@@ -60,33 +58,79 @@ pub fn step_2(lines: impl Iterator<Item = String>) {
         let right = captures.name("right").unwrap().as_str().to_owned();
 
         if node.ends_with("A") {
-            current_nodes.push(node.clone());
+            starting_nodes.push(node.clone());
         }
 
         node_map.insert(node, (left, right));
     }
 
-    let mut counter: u64 = 0;
-    while !current_nodes.iter().all(|node| node.ends_with("Z")) {
-        if counter % 1000000 == 0 {
-            print!("\rcounter crossed {}", counter);
-            io::stdout().flush().unwrap();
-        }
-        let instruction = instructions[(counter % instructions.len() as u64) as usize];
-
-        for node in current_nodes.iter_mut() {
-            let mapping = &node_map[node];
-
-            *node = if instruction == b'L' {
-                mapping.0.clone()
+    for node in starting_nodes {
+        let mut current = &node;
+        let mut visited: HashMap<String, Vec<i32>> = HashMap::new();
+        let mut loop_start = 0;
+        let mut counter = 0;
+        loop {
+            let mut found_loop = false;
+            if let Some(indices) = visited.get_mut(current) {
+                for index in indices.iter() {
+                    if index % instructions.len() as i32 == counter % instructions.len() as i32 {
+                        loop_start = *index;
+                        found_loop = true;
+                        break;
+                    }
+                }
+                if !found_loop {
+                    indices.push(counter);
+                }
             } else {
-                mapping.1.clone()
+                visited.insert(current.to_string(), vec![counter]);
+            }
+
+            if found_loop {
+                break;
+            }
+
+            if current.ends_with("Z") {
+                println!("z at {}", counter);
+            }
+
+            let mapping = &node_map[current];
+            let instruction = instructions[counter as usize % instructions.len()];
+
+            current = if instruction == b'L' {
+                &mapping.0
+            } else {
+                &mapping.1
             };
+
+            counter += 1;
         }
 
-        counter += 1;
+        println!("loop from {} to {}", loop_start, counter);
+        println!();
     }
-
-    println!();
-    println!("steps: {}", counter);
 }
+
+// OUTPUT
+// z at 20803
+// loop from 2 to 20805
+//
+// z at 17873
+// loop from 2 to 17875
+//
+// z at 23147
+// loop from 3 to 23150
+//
+// z at 15529
+// loop from 2 to 15531
+//
+// z at 17287
+// loop from 2 to 17289
+//
+// z at 19631
+// loop from 3 to 19634
+//
+// END_OUTPUT
+//
+// since there's only one z for each of these and loop_end - z == loop_start for each,
+// we just need the LCM of the z's, which is 21003205388413.
