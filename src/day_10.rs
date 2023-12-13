@@ -56,32 +56,29 @@ struct State {
 
 impl State {
     fn update(&mut self, pipe_map: &Vec<String>) {
+        self.position = move_position(self.position, self.direction).unwrap();
         let directions = get_pipe_directions(&pipe_map, self.position);
         let opposite_current_direction = opposite_direction(self.direction);
         self.direction = directions ^ opposite_current_direction;
-        self.position = move_position(self.position, self.direction).unwrap();
     }
 }
 
 pub fn step_1(lines: impl Iterator<Item = String>) {
     let pipe_map: Vec<String> = lines.collect();
-    let mut start_position = (0, 0);
-    for (line_index, line) in pipe_map.iter().enumerate() {
-        match line.find("S") {
-            Some(byte_index) => {
-                start_position = (line_index, byte_index);
-                break;
-            }
-            None => {}
-        }
-    }
+    let (start_line_index, start_line) = (&pipe_map)
+        .into_iter()
+        .enumerate()
+        .find(|(_, line)| line.contains("S"))
+        .unwrap();
+
+    let start_position = (start_line_index, start_line.find("S").unwrap());
 
     let mut states: Vec<State> = Vec::new();
     for direction in [NORTH, SOUTH, EAST, WEST] {
         if let Some(moved_position) = move_position(start_position, direction) {
             if get_pipe_directions(&pipe_map, moved_position) & opposite_direction(direction) != 0 {
                 states.push(State {
-                    position: moved_position,
+                    position: start_position,
                     direction,
                 });
             }
@@ -92,17 +89,97 @@ pub fn step_1(lines: impl Iterator<Item = String>) {
         panic!("expected two connections to S");
     }
 
-    let mut count = 1;
-    while states[0].position != states[1].position {
+    let mut count = 0;
+    loop {
         count += 1;
         states[0].update(&pipe_map);
         if states[0].position == states[1].position {
             panic!("even number loop");
         }
         states[1].update(&pipe_map);
+        if states[0].position == states[1].position {
+            break;
+        }
     }
 
     println!("furthest distance: {}", count);
 }
 
-pub fn step_2(_lines: impl Iterator<Item = String>) {}
+pub fn step_2(lines: impl Iterator<Item = String>) {
+    let pipe_map: Vec<String> = lines.collect();
+    let (start_line_index, start_line) = (&pipe_map)
+        .into_iter()
+        .enumerate()
+        .find(|(_, line)| line.contains("S"))
+        .unwrap();
+
+    let start_position = (start_line_index, start_line.find("S").unwrap());
+
+    let start_directions: Vec<u8> = [NORTH, SOUTH, EAST, WEST]
+        .into_iter()
+        .filter(|direction| {
+            if let Some(moved_position) = move_position(start_position, *direction) {
+                return get_pipe_directions(&pipe_map, moved_position)
+                    & opposite_direction(*direction)
+                    != 0;
+            }
+            return false;
+        })
+        .collect();
+
+    if start_directions.len() != 2 {
+        panic!("expected two connections to S");
+    }
+
+    let mut state = State {
+        position: start_position,
+        direction: start_directions[0],
+    };
+
+    let mut edge_map: Vec<Vec<u8>> = pipe_map
+        .iter()
+        .map(|line| line.as_bytes().into_iter().map(|_| 0).collect::<Vec<u8>>())
+        .collect();
+    edge_map[start_position.0][start_position.1] = start_directions[0] | start_directions[1];
+
+    loop {
+        state.update(&pipe_map);
+        if state.position == start_position {
+            break;
+        }
+        edge_map[state.position.0][state.position.1] =
+            get_pipe_directions(&pipe_map, state.position);
+    }
+
+    let area_inside_loop = edge_map
+        .into_iter()
+        .map(|edges| {
+            let mut count = 0;
+            let mut inside_loop = false;
+            let mut last_boundary = 0;
+            for pipe in edges {
+                if pipe == 0 {
+                    if inside_loop {
+                        count += 1;
+                    }
+                    continue;
+                }
+                if pipe & (NORTH | SOUTH) == 0 {
+                    continue;
+                }
+                if pipe != NORTH | SOUTH
+                    && last_boundary & (NORTH | SOUTH) == opposite_direction(pipe & (NORTH | SOUTH))
+                {
+                    // handle the F--J case, where even though the J has a vertical component,
+                    // we don't enter or exit the loop.
+                    continue;
+                }
+                inside_loop = !inside_loop;
+                last_boundary = pipe;
+            }
+            return count;
+        })
+        .fold(0, |a, b| a + b);
+
+    println!("area inside loop: {}", area_inside_loop);
+}
