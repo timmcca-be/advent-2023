@@ -103,8 +103,9 @@ fn evaluate_hand_value(hand: &str, is_step_2: bool) -> i32 {
         });
 }
 
-fn execute(lines: impl Iterator<Item = String>, is_step_2: bool) {
+fn execute(lines: impl IntoIterator<Item = String>, is_step_2: bool) {
     let mut hands = lines
+        .into_iter()
         .map(|line| Hand {
             value: evaluate_hand_value(&line[..5], is_step_2),
             bid: line[6..].parse::<i32>().unwrap(),
@@ -123,10 +124,10 @@ fn execute(lines: impl Iterator<Item = String>, is_step_2: bool) {
     println!("sum: {}", sum);
 }
 
-pub fn step_1(lines: impl Iterator<Item = String>) {
+pub fn step_1(lines: impl IntoIterator<Item = String>) {
     execute(lines, false);
 }
 
-pub fn step_2(lines: impl Iterator<Item = String>) {
+pub fn step_2(lines: impl IntoIterator<Item = String>) {
     execute(lines, true);
 }

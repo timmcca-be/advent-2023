@@ -1,6 +1,6 @@
 use std::vec::Vec;
 
-pub fn step_1(lines: impl Iterator<Item = String>) {
+pub fn step_1(lines: impl IntoIterator<Item = String>) {
     let mut sum = 0;
 
     for line in lines {
@@ -23,7 +23,7 @@ pub fn step_1(lines: impl Iterator<Item = String>) {
     println!("sum: {}", sum);
 }
 
-pub fn step_2(lines: impl Iterator<Item = String>) {
+pub fn step_2(lines: impl IntoIterator<Item = String>) {
     let mut sum = 0;
 
     for line in lines {

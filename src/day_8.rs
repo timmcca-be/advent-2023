@@ -7,7 +7,7 @@ lazy_static! {
         Regex::new(r"(?<node>\w{3}) = \((?<left>\w{3}), (?<right>\w{3})\)").unwrap();
 }
 
-pub fn step_1(lines: impl Iterator<Item = String>) {
+pub fn step_1(lines: impl IntoIterator<Item = String>) {
     let mut lines_iterator = lines.into_iter();
     let instructions_str = lines_iterator.next().unwrap();
     let instructions = instructions_str.as_bytes();
@@ -42,7 +42,7 @@ pub fn step_1(lines: impl Iterator<Item = String>) {
     println!("steps: {}", counter);
 }
 
-pub fn step_2(lines: impl Iterator<Item = String>) {
+pub fn step_2(lines: impl IntoIterator<Item = String>) {
     let mut lines_iterator = lines.into_iter();
     let instructions_str = lines_iterator.next().unwrap();
     let instructions = instructions_str.as_bytes();

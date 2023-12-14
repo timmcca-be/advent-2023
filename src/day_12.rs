@@ -53,7 +53,7 @@ fn count_possible_combinations(
     return total;
 }
 
-pub fn step_1(lines: impl Iterator<Item = String>) {
+pub fn step_1(lines: impl IntoIterator<Item = String>) {
     let mut total = 0;
 
     for line in lines {
@@ -69,10 +69,10 @@ pub fn step_1(lines: impl Iterator<Item = String>) {
     println!("total: {}", total);
 }
 
-pub fn step_2(lines: impl Iterator<Item = String>) {
+pub fn step_2(lines: impl IntoIterator<Item = String>) {
     let mut total = 0;
 
-    for (line_index, line) in lines.enumerate() {
+    for (line_index, line) in lines.into_iter().enumerate() {
         print!("\r{} lines complete", line_index);
         stdout().flush().unwrap();
         let split: Vec<&str> = line.split(" ").collect();

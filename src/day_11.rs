@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 use std::vec::Vec;
 
-fn execute(lines: impl Iterator<Item = String>, empty_line_bonus: usize) {
+fn execute(lines: impl IntoIterator<Item = String>, empty_line_bonus: usize) {
     let mut non_empty_rows: HashSet<usize> = HashSet::new();
     let mut non_empty_columns: HashSet<usize> = HashSet::new();
 
@@ -69,10 +69,10 @@ fn execute(lines: impl Iterator<Item = String>, empty_line_bonus: usize) {
     println!("sum of distances: {}", sum_of_distances);
 }
 
-pub fn step_1(lines: impl Iterator<Item = String>) {
+pub fn step_1(lines: impl IntoIterator<Item = String>) {
     execute(lines, 1);
 }
 
-pub fn step_2(lines: impl Iterator<Item = String>) {
+pub fn step_2(lines: impl IntoIterator<Item = String>) {
     execute(lines, 999999);
 }

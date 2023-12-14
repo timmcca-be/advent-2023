@@ -63,8 +63,8 @@ impl State {
     }
 }
 
-pub fn step_1(lines: impl Iterator<Item = String>) {
-    let pipe_map: Vec<String> = lines.collect();
+pub fn step_1(lines: impl IntoIterator<Item = String>) {
+    let pipe_map: Vec<String> = lines.into_iter().collect();
     let (start_line_index, start_line) = (&pipe_map)
         .into_iter()
         .enumerate()
@@ -105,8 +105,8 @@ pub fn step_1(lines: impl Iterator<Item = String>) {
     println!("furthest distance: {}", count);
 }
 
-pub fn step_2(lines: impl Iterator<Item = String>) {
-    let pipe_map: Vec<String> = lines.collect();
+pub fn step_2(lines: impl IntoIterator<Item = String>) {
+    let pipe_map: Vec<String> = lines.into_iter().collect();
     let (start_line_index, start_line) = (&pipe_map)
         .into_iter()
         .enumerate()

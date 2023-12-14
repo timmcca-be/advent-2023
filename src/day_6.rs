@@ -43,7 +43,7 @@ pub fn step_1(lines: impl IntoIterator<Item = String>) {
     println!("product: {}", product);
 }
 
-pub fn step_2(lines: impl Iterator<Item = String>) {
+pub fn step_2(lines: impl IntoIterator<Item = String>) {
     let mut lines_iterator = lines.into_iter();
     let time_string = lines_iterator.next().unwrap();
     let distance_string = lines_iterator.next().unwrap();
