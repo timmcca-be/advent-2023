@@ -17,6 +17,18 @@ mod day_11;
 mod day_12;
 mod day_13;
 mod day_14;
+mod day_15;
+mod day_16;
+mod day_17;
+mod day_18;
+mod day_19;
+
+mod day_20;
+mod day_21;
+mod day_22;
+mod day_23;
+mod day_24;
+mod day_25;
 
 #[derive(Parser)]
 struct Args {
@@ -59,6 +71,28 @@ fn main() {
         "day-13-step-2" => day_13::step_2(lines),
         "day-14-step-1" => day_14::step_1(lines),
         "day-14-step-2" => day_14::step_2(lines),
+        "day-15-step-1" => day_15::step_1(lines),
+        "day-15-step-2" => day_15::step_2(lines),
+        "day-16-step-1" => day_16::step_1(lines),
+        "day-16-step-2" => day_16::step_2(lines),
+        "day-17-step-1" => day_17::step_1(lines),
+        "day-17-step-2" => day_17::step_2(lines),
+        "day-18-step-1" => day_18::step_1(lines),
+        "day-18-step-2" => day_18::step_2(lines),
+        "day-19-step-1" => day_19::step_1(lines),
+        "day-19-step-2" => day_19::step_2(lines),
+        "day-20-step-1" => day_20::step_1(lines),
+        "day-20-step-2" => day_20::step_2(lines),
+        "day-21-step-1" => day_21::step_1(lines),
+        "day-21-step-2" => day_21::step_2(lines),
+        "day-22-step-1" => day_22::step_1(lines),
+        "day-22-step-2" => day_22::step_2(lines),
+        "day-23-step-1" => day_23::step_1(lines),
+        "day-23-step-2" => day_23::step_2(lines),
+        "day-24-step-1" => day_24::step_1(lines),
+        "day-24-step-2" => day_24::step_2(lines),
+        "day-25-step-1" => day_25::step_1(lines),
+        "day-25-step-2" => day_25::step_2(lines),
         _ => panic!("unknown command"),
     };
 }
