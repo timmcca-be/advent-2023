@@ -13,7 +13,7 @@ fn hash(label: &str) -> u64 {
     return current;
 }
 
-pub fn step_1(lines: impl Iterator<Item = String>) {
+pub fn step_1(lines: impl IntoIterator<Item = String>) {
     let line = lines.into_iter().next().unwrap();
 
     let mut total = 0;
@@ -29,7 +29,7 @@ lazy_static! {
         Regex::new(r"(?<label>\w+)(?:-|=(?<focal_length>\d+))$").unwrap();
 }
 
-pub fn step_2(lines: impl Iterator<Item = String>) {
+pub fn step_2(lines: impl IntoIterator<Item = String>) {
     let line = lines.into_iter().next().unwrap();
 
     let mut boxes: Vec<LinkedHashMap<&str, u64>> = (0..256).map(|_| LinkedHashMap::new()).collect();
