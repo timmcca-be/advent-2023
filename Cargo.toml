@@ -10,3 +10,4 @@ clap = { version = "4.4.10", features = ["derive"] }
 regex = "1.10.2"
 lazy_static = "1.4.0"
 num = "0.4.1"
+linked-hash-map = "0.5.6"
