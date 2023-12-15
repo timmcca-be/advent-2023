@@ -57,8 +57,8 @@ fn execute(lines: impl IntoIterator<Item = String>, is_step_2: bool) {
             while columns.len() < line.len() {
                 columns.push(0);
             }
-            for (byte_index, byte) in line.as_bytes().iter().enumerate() {
-                let byte_value = if *byte == b'#' { 1 } else { 0 };
+            for (byte_index, byte) in line.bytes().enumerate() {
+                let byte_value = if byte == b'#' { 1 } else { 0 };
                 rows[line_index] <<= 1;
                 rows[line_index] += byte_value;
                 columns[byte_index] <<= 1;

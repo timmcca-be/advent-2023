@@ -138,7 +138,7 @@ pub fn step_2(lines: impl IntoIterator<Item = String>) {
 
     let mut edge_map: Vec<Vec<u8>> = pipe_map
         .iter()
-        .map(|line| line.as_bytes().into_iter().map(|_| 0).collect::<Vec<u8>>())
+        .map(|line| line.bytes().map(|_| 0).collect::<Vec<u8>>())
         .collect();
     edge_map[start_position.0][start_position.1] = start_directions[0] | start_directions[1];
 

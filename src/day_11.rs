@@ -15,8 +15,8 @@ fn execute(lines: impl IntoIterator<Item = String>, empty_line_bonus: usize) {
         if num_columns == 0 {
             num_columns = line.len();
         }
-        for (byte_index, byte) in line.as_bytes().into_iter().enumerate() {
-            if *byte == b'#' {
+        for (byte_index, byte) in line.bytes().enumerate() {
+            if byte == b'#' {
                 non_empty_rows.insert(line_index);
                 non_empty_columns.insert(byte_index);
                 coordinates.push((line_index, byte_index));

@@ -21,8 +21,8 @@ pub fn step_1(lines: impl IntoIterator<Item = String>) {
             })
         }
 
-        for (byte_index, byte) in line.as_bytes().into_iter().enumerate() {
-            match *byte {
+        for (byte_index, byte) in line.bytes().enumerate() {
+            match byte {
                 b'O' => working_groups[byte_index].num_rocks += 1,
                 b'#' => {
                     if working_groups[byte_index].num_rocks > 0 {
@@ -195,8 +195,8 @@ pub fn step_2(lines: impl IntoIterator<Item = String>) {
 
     let mut load = 0;
     for (line_index, line) in visited_vec[final_index as usize].split("\n").enumerate() {
-        for byte in line.as_bytes() {
-            if *byte == b'O' {
+        for byte in line.bytes() {
+            if byte == b'O' {
                 load += dish.lines.len() - line_index;
             }
         }
