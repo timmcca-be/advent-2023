@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::io::{stdout, Write};
 
 fn count_possible_combinations(
     record: &[u8],
@@ -72,9 +71,7 @@ pub fn step_1(lines: impl IntoIterator<Item = String>) {
 pub fn step_2(lines: impl IntoIterator<Item = String>) {
     let mut total = 0;
 
-    for (line_index, line) in lines.into_iter().enumerate() {
-        print!("\r{} lines complete", line_index);
-        stdout().flush().unwrap();
+    for line in lines {
         let split: Vec<&str> = line.split(" ").collect();
         let record = split[0];
         let groups: Vec<usize> = split[1]
@@ -100,6 +97,5 @@ pub fn step_2(lines: impl IntoIterator<Item = String>) {
         );
     }
 
-    println!();
     println!("total: {}", total);
 }
